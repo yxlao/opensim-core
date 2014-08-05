@@ -1,6 +1,9 @@
-%module(directors="1") opensim
-%module opensim
+%module(directors="1") simulation
+%module simulation
 #pragma SWIG nowarn=822,451,503,516,325
+
+/** Pass Doxygen documentation to python wrapper */
+%feature("autodoc", "3");
 
 /*
 For consistency with the rest of the API, we use camel-case for variable names.
@@ -11,10 +14,9 @@ own project.
 %{
 #define SWIG_FILE_WITH_INIT
 
-#include <OpenSim/version.h>
 #include <SimTKsimbody.h>
+
 #include <OpenSim/Common/osimCommonDLL.h>
-#include <OpenSim/Simulation/osimSimulationDLL.h>
 #include <OpenSim/Common/Exception.h>
 #include <OpenSim/Common/Array.h>
 #include <OpenSim/Common/ArrayPtrs.h>
@@ -52,6 +54,9 @@ own project.
 #include <OpenSim/Common/FunctionSet.h>
 
 #include <OpenSim/Common/LoadOpenSimLibrary.h>
+#include <OpenSim/Common/MarkerData.h>
+
+#include <OpenSim/Simulation/osimSimulationDLL.h>
 
 #include <OpenSim/Simulation/Model/ModelComponent.h>
 #include <OpenSim/Simulation/Model/ModelComponentSet.h>
@@ -207,7 +212,6 @@ own project.
 #include <OpenSim/Tools/IKMarkerTask.h>
 #include <OpenSim/Tools/IKCoordinateTask.h>
 #include <OpenSim/Tools/IKTaskSet.h>
-#include <OpenSim/Common/MarkerData.h>
 
 #include <OpenSim/Tools/MarkerPair.h>
 #include <OpenSim/Tools/MarkerPairSet.h>
@@ -240,295 +244,14 @@ using namespace SimTK;
 
 %}
 
+%import pyWrapOpenSimCommon.i
+
 %feature("director") OpenSim::AnalysisWrapper;
-%feature("director") OpenSim::SimtkLogCallback;
-%feature("director") SimTK::DecorativeGeometryImplementation;
+
 %feature("notabstract") ControlLinear;
-
-/** Pass Doxygen documentation to python wrapper */
-%feature("autodoc", "3");
-
-%rename(OpenSimObject) OpenSim::Object;
-%rename(OpenSimException) OpenSim::Exception;
-
-%rename(printToXML) OpenSim::Object::print(const std::string&);
-%rename(printToXML) OpenSim::XMLDocument::print(const std::string&);
-%rename(printToXML) OpenSim::XMLDocument::print();
-%rename(printToFile) OpenSim::Storage::print;
-
-/* If needed %extend will be used, these operators are not supported.*/
-%ignore *::operator[];
-%ignore *::operator=;
-
-/* This file is for creation/handling of arrays */
-%include "std_carray.i";
-
-/* This interface file is for better handling of pointers and references */
-%include "typemaps.i"
-%include "std_string.i"
-/*
-%typemap(javacode) OpenSim::Object %{
-  public boolean equals(Object obj) {
-    boolean equal = false;
-    if (obj instanceof $javaclassname)
-      equal = ((($javaclassname)obj).swigCPtr == this.swigCPtr);
-    return equal;
-  }
-  private int cacheId=-1;  // cache the Id to avoid recomputation for hashing purposes
- 
-  public int hashCode() {
-     if (cacheId==-1)
-        cacheId=(int)swigCPtr;
-     
-    return( cacheId );
-  }
-
-%}
-
-%typemap(javacode) OpenSim::MarkerData %{
-  public double[] getTimeRange() { return new double[]{getStartFrameTime(), getLastFrameTime()}; }
-%}
-
-%typemap(javacode) OpenSim::Array<double> %{
-	public void fromString(String string) {
-      // Remove open and close parenth if any
-      String workString= new String(string);
-      int liveStart = workString.indexOf("(");
-      int liveEnd = workString.indexOf(")");
-      if (liveStart!=-1 && liveEnd!=-1){
-          workString = workString.substring(liveStart+1, liveEnd);
-      }
-      else if (liveStart!=liveEnd){
-          //throw new ParseException("Illegal format: Expect space separated values, optionally between matched parentheses", liveEnd);
-          return;
-      }
-      String[] splits = workString.split(" ");
-      double[] values = new double[splits.length];
-      for(int i=0; i<splits.length; i++){
-           values[i]=Double.parseDouble(splits[i]);
-       }
-       this.setValues(values, splits.length);
-	}
-%}
-
-%javamethodmodifiers OpenSim::Model::addModelComponent "private";
-%javamethodmodifiers OpenSim::Model::addBody "private";
-%javamethodmodifiers OpenSim::Model::addConstraint "private";
-%javamethodmodifiers OpenSim::Model::addForce "private";
-%javamethodmodifiers OpenSim::Model::addProbe "private";
-%javamethodmodifiers OpenSim::Model::addContactGeometry "private";
-%javamethodmodifiers OpenSim::Model::addController "private";
-%javamethodmodifiers OpenSim::Model::addAnalysis "private";
-
-%rename OpenSim::Model::addModelComponent private_addModelComponent;
-%rename OpenSim::Model::addBody private_addBody;
-%rename OpenSim::Model::addConstraint private_addConstraint;
-%rename OpenSim::Model::addForce private_addForce;
-%rename OpenSim::Model::addProbe private_addProbe;
-%rename OpenSim::Model::addContactGeometry private_addContactGeometry;
-%rename OpenSim::Model::addController private_addController;
-%rename OpenSim::Model::addAnalysis private_addAnalysis;
-
-
-%typemap(javacode) OpenSim::FunctionSet %{
-  public boolean adoptAndAppend(Function aFunction) {
-	aFunction.markAdopted();
-    return super.adoptAndAppend(aFunction);
-  }
-%}
-
-%typemap(javacode) OpenSim::Model %{
-  private String originalModelPath = null;
-  // Important that we only refer to originalModelPath if the model's getInputFileName() is not set
-  public void setOriginalModelPathFromModel(Model model) {
-    originalModelPath = null;
-    if(model.getInputFileName()!=null && !model.getInputFileName().equals(""))
-      originalModelPath = (new java.io.File(model.getInputFileName())).getParent();
-	 else if(model.originalModelPath!=null && !model.originalModelPath.equals(""))
-      originalModelPath = model.originalModelPath;
-  }
-  public String getFilePath() {
-    if(getInputFileName()!=null && !getInputFileName().equals("") && (new java.io.File(getInputFileName())).getParent()!=null)
-      return (new java.io.File(getInputFileName())).getParent() + java.io.File.separator;
-    else if(originalModelPath!=null && !originalModelPath.equals(""))
-      return originalModelPath + java.io.File.separator;
-    else return "";
-  }
-
-  public void addProbe(Probe aProbe) {
-	aProbe.markAdopted();
-    private_addProbe(aProbe);
-  }  
-
-  public void addForce(Force aForce) {
-	aForce.markAdopted();
-	private_addForce(aForce);
-  }
-%}
-
-%typemap(javacode) OpenSim::Array<std::string> %{
-   public java.util.Vector<String> toVector() {
-      java.util.Vector<String> vector = new java.util.Vector<String>();
-      vector.setSize(getSize());
-      for(int i=0; i<getSize(); i++) vector.set(i, getitem(i));
-      return vector;
-   }
-   public void append(java.util.Vector<String> vector) {
-      for(int i=0; i<vector.size(); i++) append(vector.get(i));
-   }
-   public static ArrayStr fromVector(java.util.Vector<String> vector) {
-      ArrayStr array = new ArrayStr();
-      array.append(vector);
-      return array;
-   }
-%}
-
-%typemap(javacode) OpenSim::XYFunctionInterface %{
-  private Function  dFunction;  // cache pointer to function so it's not garbage collected early
-
-  public XYFunctionInterface(Function aFunction, Boolean unused) {
-		this(aFunction);
-		dFunction = aFunction;
-  }
-%}
-
-%pragma(java) jniclassclassmodifiers="public class"
-
-SWIG_JAVABODY_PROXY(public, public, SWIGTYPE)
-
-%pragma(java) jniclassimports="import javax.swing.JOptionPane;"
-
-%pragma(java) jniclasscode=%{
-  static {
-      try{
-        System.loadLibrary("osimJavaJNI");		// All OpenSim classes required for GUI operation.
-      }
-      catch(UnsatisfiedLinkError e){
-           new JOptionPane("Required library failed to load. Check that the dynamic library osimJavaJNI is in your PATH\n"+e, 
-				JOptionPane.ERROR_MESSAGE).createDialog(null, "Error").setVisible(true);
-      }
-  }
-%}
-
-
-// Generic Exception handling
-%typemap(throws) SWIGTYPE, SWIGTYPE &, SWIGTYPE *, SWIGTYPE [ANY] %{
-  SWIG_JavaThrowException(jenv, SWIG_JavaIOException,
-                          "C++ $1_type exception thrown");
-  return $null;
-%}
-
-%typemap(throws, throws="java.io.IOException") OpenSim::Exception {
-  jclass excep = jenv->FindClass("java/io/IOException");
-  if (excep)
-    jenv->ThrowNew(excep, ($1).getMessage());
-  return $null;
-}
-
-%exception {
-  if (OpenSim::mapCxxExceptionsToJava){
-	  try {
-	  $action
-	  }
-	  catch(std::exception& _ex){
-		  jclass excep = jenv->FindClass("java/lang/RuntimeException");
-		  if (excep)
-		  jenv->ThrowNew(excep,_ex.what());
-	  }
-  }
-  else
-	$action
-}
-
-%exception OpenSim::AnalyticGeometry::dynamic_cast(Geometry *geometry) {
-    $action
-    if (!result) {
-        jclass excep = jenv->FindClass("java/lang/ClassCastException");
-        if (excep) {
-            jenv->ThrowNew(excep, "dynamic_cast exception");
-        }
-    }
-}
-
-%extend OpenSim::AnalyticGeometry {
-    static OpenSim::AnalyticGeometry *dynamic_cast(OpenSim::Geometry *geometry) {
-        return dynamic_cast<OpenSim::AnalyticGeometry *>(geometry);
-    }
-};
-
-%extend OpenSim::LineGeometry {
-    static LineGeometry *dynamic_cast(Geometry *geometry) {
-        return dynamic_cast<LineGeometry *>(geometry);
-    }
-};
-
-%extend OpenSim::AnalyticSphere {
-    static AnalyticSphere *dynamic_cast(Geometry *geometry) {
-        return dynamic_cast<AnalyticSphere *>(geometry);
-    }
-};
-
-%extend OpenSim::AnalyticCylinder {
-    static AnalyticCylinder *dynamic_cast(Geometry *geometry) {
-        return dynamic_cast<AnalyticCylinder *>(geometry);
-    }
-};
-
-%extend OpenSim::AnalyticEllipsoid {
-    static AnalyticEllipsoid *dynamic_cast(Geometry *geometry) {
-        return dynamic_cast<AnalyticEllipsoid *>(geometry);
-    }
-};
-
-%extend OpenSim::AnalyticTorus {
-    static AnalyticTorus *dynamic_cast(Geometry *geometry) {
-        return dynamic_cast<AnalyticTorus *>(geometry);
-    }
-};
-
-%extend OpenSim::PolyhedralGeometry {
-    static PolyhedralGeometry *dynamic_cast(Geometry *geometry) {
-        return dynamic_cast<PolyhedralGeometry *>(geometry);
-    }
-};
-
-%extend OpenSim::Body {
-	void getCenterOfMass(double dCom[3]) {
-		self->getMassCenter(SimTK::Vec3::updAs(dCom));
-	};
-	void getInertia(Array<double>& rInertia) {
-		SimTK::Mat33 inertia;
-		self->getInertia(inertia);
-		rInertia[0]=inertia[0][0];
-		rInertia[1]=inertia[1][1];
-		rInertia[2]=inertia[2][2];
-		rInertia[3]=inertia[0][1];
-		rInertia[4]=inertia[0][2];
-		rInertia[5]=inertia[1][2];
-
-	};
-	void setInertia(Array<double>& aInertia) {
-		self->setInertia(SimTK::Inertia(aInertia[0], 
-		aInertia[1], aInertia[2], aInertia[3], aInertia[4], aInertia[5]));
-	}
-};
-*/
 
 // Memory management
 // =================
-/*
-This facility will help us avoid segfaults that occur when two different
-objects believe they own a pointer, and so they both try to delete it. We can
-instead notify the object that something else has adopted it, and will take
-care of deleting it.
-*/
-%extend OpenSim::Object {
-%pythoncode %{
-    def _markAdopted(self):
-        if self.this and self.thisown:
-            self.thisown = False
-%}
-};
 
 /*
 The added component is not responsible for its own memory management anymore
@@ -570,232 +293,6 @@ JOINT_ADOPT_HELPER(WeldJoint);
 JOINT_ADOPT_HELPER(GimbalJoint);
 JOINT_ADOPT_HELPER(UniversalJoint);
 JOINT_ADOPT_HELPER(PlanarJoint);
-
-%extend OpenSim::Array<double> {
-	void appendVec3(SimTK::Vec3 vec3) {
-		for(int i=0; i<3; i++)
-			self->append(vec3[i]);
-	}
-	void appendVector(SimTK::Vector vec) {
-		for(int i=0; i<vec.size(); i++)
-			self->append(vec[i]);
-	}
-
-	SimTK::Vec3 getAsVec3() {
-		return SimTK::Vec3::getAs(self->get());
-	};
-	
-	static SimTK::Vec3 createVec3(double e1, double e2, double e3) {
-		Array<double>* arr = new Array<double>(e1, 3);
-		arr->set(1, e2);
-		arr->set(2, e3);
-		return SimTK::Vec3::getAs(arr->get());
-	};
-  
-   static SimTK::Vec3 createVec3(double e1) {
-		Array<double>* arr = new Array<double>(e1, 3);
-		return SimTK::Vec3::getAs(arr->get());
-  };
-   
-   static SimTK::Vec3  createVec3(double es[3]) {
-		Array<double>* arr = new Array<double>(es[0], 3);
-		arr->set(1, es[1]);
-		arr->set(2, es[2]);
-		return SimTK::Vec3::getAs(arr->get());
-  };
-
-   SimTK::Vector_<double>  getAsVector() {
-		return SimTK::Vector(self->getSize(), &(*self)[0]);
-  };
-
-   void populateFromVector(SimTK::Vector_<double> aVector) {
-		int sz = aVector.size();
-		for(int i=0; i<sz; ++i)
-			self->append(aVector[i]);
-   }
-
-   static  OpenSim::Array<double> getValuesFromVec3(SimTK::Vec3 vec3) {
-		OpenSim::Array<double> arr(0, 3);
-		for (int i=0; i<3; i++) arr[i] = vec3[i];
-		return arr;
-  };
-  
-  std::string toString() const {
-		std::stringstream stream;
-		for (int i=0; i< self->getSize(); i++)
-			stream <<  self->get(i) << " ";
-		return stream.str(); 
-  }
-
-  void setFromPyArray(double* dValues, int size) {
-		self->setSize(size);
-		for(int i=0; i< size; ++i)
-		    self->set(i, dValues[i]);
-};
-};
-/*
-%extend OpenSim::Model {
-	static void LoadOpenSimLibrary(std::string libraryName){
-		LoadOpenSimLibrary(libraryName);
-	}
-
-	void setDefaultControls(SimTK::Vector& newControls) {
-		self->updDefaultControls() = newControls;
-	}
-}
-
-%extend OpenSim::Manager {
-	void setIntegratorAccuracy(double accuracy){
-		self->getIntegrator().setAccuracy(accuracy);
-	}
-}
-
-%extend OpenSim::Object {
-	static OpenSim::Array<std::string> getFunctionClassNames() {
-		  OpenSim::Array<std::string> availableClassNames;
-		  ArrayPtrs<OpenSim::Function> rArray;
-		  Object::getRegisteredObjectsOfGivenType<OpenSim::Function>(rArray);
-		  for (int i=0;i<rArray.size(); i++)
-			availableClassNames.append(rArray[i]->getConcreteClassName());
-		  
-		  return availableClassNames;
-	}
-}
-
-%include "numpy.i"
-
-%init %{
-import_array();
-%}
-
-%apply (double* IN_ARRAY1, int DIM1) {(double* dValues, int size)}
-*/
-/* rest of header files to be wrapped */
-%include <OpenSim/version.h>
-%include <SimTKcommon.h>
-
-%include <SimTKcommon/Constants.h>
-%include <SWIGSimTK/Vec.h>
-%include <SimTKcommon/SmallMatrix.h>
-// Vec3
-namespace SimTK {
-%template(Vec3) Vec<3>;
-}
-// Mat33
-%include <SWIGSimTK/Mat.h>
-namespace SimTK {
-%template(Mat33) Mat<3, 3>;
-}
-// Vector and Matrix
-%include <SWIGSimTK/BigMatrix.h>
-namespace SimTK {
-%template(MatrixBaseDouble) SimTK::MatrixBase<double>;
-%template(VectorBaseDouble) SimTK::VectorBase<double>;
-%template(Vector) SimTK::Vector_<double>;
-%template(Matrix) SimTK::Matrix_<double>;
-}
-
-%include <SWIGSimTK/SpatialAlgebra.h>
-namespace SimTK {
-%template(SpatialVec) Vec<2,   Vec3>;
-%template(VectorOfSpatialVec) Vector_<SpatialVec>;
-%template(VectorOfVec3) Vector_<Vec3>;
-}
-// Transform
-%include <SWIGSimTK/Transform.h>
-namespace SimTK {
-%template(Transform) SimTK::Transform_<double>;
-}
-
-%include <SWIGSimTK/MassProperties.h>
-namespace SimTK {
-%template(Inertia) SimTK::Inertia_<double>;
-%template(MassProperties) SimTK::MassProperties_<double>;
-}
-%include <SWIGSimTK/common.h>
-%include <SWIGSimTK/Array.h>
-
-typedef int MobilizedBodyIndex;
-typedef int SubsystemIndex;
-typedef int SystemQIndex;
-typedef int SystemQErrIndex;
-typedef int SystemZIndex;
-typedef int SystemYIndex;
-typedef int SystemYErrIndex;
-typedef int SystemUIndex;
-typedef int SystemUErrIndex;
-typedef int SystemUDotErrIndex;
-
-namespace SimTK {
-%template(ArrayIndexUnsigned) ArrayIndexTraits<unsigned>; 
-%template(ArrayIndexInt) ArrayIndexTraits<int>; 
-}
-
-%include <SWIGSimTK/DecorativeGeometry.h>
-
-namespace SimTK {
-%template(ArrayDecorativeGeometry) SimTK::Array_<SimTK::DecorativeGeometry>;
-}
-
-// State & Stage
-%include <SWIGSimTK/Stage.h>
-%include <SWIGSimTK/State.h>
-
-// osimCommon Library
-%include <OpenSim/Common/osimCommonDLL.h>
-%include <OpenSim/Common/Exception.h>
-%include <OpenSim/Common/Array.h>
-%include <OpenSim/Common/ArrayPtrs.h>
-%include <OpenSim/Common/AbstractProperty.h>
-%include <OpenSim/Common/Property.h>
-%include <OpenSim/Common/PropertyGroup.h>
-%template(ArrayPtrsPropertyGroup) OpenSim::ArrayPtrs<OpenSim::PropertyGroup>;
-%include <OpenSim/Common/Object.h>
-%include <OpenSim/Common/ObjectGroup.h>
-%include <OpenSim/Common/Geometry.h>
-%include <OpenSim/Common/DisplayGeometry.h>
-%include <OpenSim/Common/Set.h>
-%template(SetGeometry) OpenSim::Set<OpenSim::DisplayGeometry>;
-%include <OpenSim/Common/GeometrySet.h>
-%include <OpenSim/Common/VisibleObject.h>
-%include <OpenSim/Common/StateVector.h>
-%include <OpenSim/Common/StorageInterface.h>
-%include <OpenSim/Common/Storage.h>
-%include <OpenSim/Common/Units.h>
-%include <OpenSim/Common/IO.h>
-%include <OpenSim/Common/Function.h>
-
-%template(SetFunctions) OpenSim::Set<OpenSim::Function>;
-%include <OpenSim/Common/FunctionSet.h>
-
-%include <OpenSim/Common/Constant.h>
-%include <OpenSim/Common/SimmSpline.h>
-%include <OpenSim/Common/StepFunction.h>
-%include <OpenSim/Common/PiecewiseConstantFunction.h>
-%include <OpenSim/Common/LinearFunction.h>
-%include <OpenSim/Common/PiecewiseLinearFunction.h>
-%include <OpenSim/Common/MultiplierFunction.h>
-%include <OpenSim/Common/GCVSpline.h>
-%include <OpenSim/Common/Sine.h>
-%include <OpenSim/Common/PolynomialFunction.h>
-%include <OpenSim/Common/SmoothSegmentedFunctionFactory.h>
-%include <OpenSim/Common/SmoothSegmentedFunction.h>
-
-%include <OpenSim/Common/XYFunctionInterface.h>
-%template(ArrayXYPoint) OpenSim::Array<XYPoint>;
-%template(ArrayBool) OpenSim::Array<bool>;
-%template(ArrayDouble) OpenSim::Array<double>;
-%template(ArrayInt) OpenSim::Array<int>;
-%template(ArrayStr) OpenSim::Array<std::string>;
-%template(ArrayObjPtr) OpenSim::Array<OpenSim::Object*>;
-%template(ArrayPtrsObj) OpenSim::ArrayPtrs<OpenSim::Object>;
-%include <OpenSim/Common/ComponentOutput.h>
-%include <OpenSim/Common/ComponentConnector.h>
-%include <OpenSim/Common/Component.h>
-%include <OpenSim/Common/Scale.h>
-%template(SetScales) OpenSim::Set<OpenSim::Scale>;
-%include <OpenSim/Common/ScaleSet.h>
-%include <OpenSim/Common/MarkerData.h>
 
 // osimSimulation
 %include <OpenSim/Simulation/osimSimulationDLL.h>
@@ -1037,31 +534,9 @@ namespace SimTK {
 // =================
 
 /*
-A macro to facilitate adding adoptAndAppend methods to these sets. For NAME ==
-Geometry, the macro expands to:
+ See pyWrapOpenSimCommon.i for the SET_ADOPT_HELPER macro.
+*/ 
 
-%extend OpenSim::GeometrySet {
-%pythoncode %{
-    def adoptAndAppend(self, aGeometry):
-        aGeometry._markAdopted()
-        return super(GeometrySet, self).adoptAndAppend(aGeometry)
-%}
-};
-
-note: ## is a "glue" operator: `a ## b` --> `ab`.
-*/
-%define SET_ADOPT_HELPER(NAME)
-%extend OpenSim:: ## NAME ## Set {
-%pythoncode %{
-    def adoptAndAppend(self, a ## NAME):
-        a ## NAME._markAdopted()
-        return super(NAME ## Set, self).adoptAndAppend(a ## NAME)
-%}
-};
-%enddef
-
-SET_ADOPT_HELPER(Geometry);
-SET_ADOPT_HELPER(Scale);
 SET_ADOPT_HELPER(Force);
 SET_ADOPT_HELPER(Controller);
 SET_ADOPT_HELPER(ContactGeometry);
@@ -1080,14 +555,6 @@ SET_ADOPT_HELPER(Measurement);
 
 // These didn't work with the macro for some reason. I got complaints about
 // multiple definitions of, e.g.,  Function in the target language.
-%extend OpenSim::FunctionSet {
-%pythoncode %{
-    def adoptAndAppend(self, aFunction):
-        aFunction._markAdopted()
-        return super(FunctionSet, self).adoptAndAppend(aFunction)
-%}
-};
-
 %extend OpenSim::ProbeSet {
 %pythoncode %{
     def adoptAndAppend(self, aProbe):
