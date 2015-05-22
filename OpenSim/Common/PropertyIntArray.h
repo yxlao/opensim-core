@@ -1,5 +1,5 @@
-#ifndef _PropertyIntArray_h_
-#define _PropertyIntArray_h_
+#ifndef OPENSIM_PROPERTY_INT_ARRAY_H_
+#define OPENSIM_PROPERTY_INT_ARRAY_H_
 /* -------------------------------------------------------------------------- *
  *                        OpenSim:  PropertyIntArray.h                        *
  * -------------------------------------------------------------------------- *
@@ -38,6 +38,8 @@
 
 //=============================================================================
 //=============================================================================
+namespace OpenSim { 
+
 /**
  * Class PropertyIntArray extends class Property.  It consists of an
  * array of integers (i.e., Array<int>) and the methods for accessing
@@ -46,8 +48,6 @@
  * @version 1.0
  * @author Frank C. Anderson
  */
-namespace OpenSim { 
-
 class OSIMCOMMON_API PropertyIntArray : public Property_Deprecated
 {
 
@@ -55,59 +55,59 @@ class OSIMCOMMON_API PropertyIntArray : public Property_Deprecated
 // DATA
 //=============================================================================
 private:
-	/** Array of integers. */
-	Array<int> _array;
+    /** Array of integers. */
+    Array<int> _array;
 
 //=============================================================================
 // METHODS
 //=============================================================================
-	//--------------------------------------------------------------------------
-	// CONSTRUCTION
-	//--------------------------------------------------------------------------
+    //--------------------------------------------------------------------------
+    // CONSTRUCTION
+    //--------------------------------------------------------------------------
 public:
-	PropertyIntArray();
-	PropertyIntArray(const std::string &aName,
-		const Array<int> &aArray);
-	PropertyIntArray(const std::string &aName,
-		int aSize,const int aArray[]);
-	PropertyIntArray(const PropertyIntArray &aProperty);
+    PropertyIntArray();
+    PropertyIntArray(const std::string &aName,
+        const Array<int> &aArray);
+    PropertyIntArray(const std::string &aName,
+        int aSize,const int aArray[]);
+    PropertyIntArray(const PropertyIntArray &aProperty);
 
     bool isArrayProperty() const override {return true;}
 
-	PropertyIntArray* clone() const override;
+    PropertyIntArray* clone() const override;
 
     int getNumValues() const override {return getArraySize();}
 
-	//--------------------------------------------------------------------------
-	// OPERATORS
-	//--------------------------------------------------------------------------
+    //--------------------------------------------------------------------------
+    // OPERATORS
+    //--------------------------------------------------------------------------
 public:
-	PropertyIntArray& operator=(const PropertyIntArray &aProperty);
+    PropertyIntArray& operator=(const PropertyIntArray &aProperty);
 
-	//--------------------------------------------------------------------------
-	// GET AND SET
-	//--------------------------------------------------------------------------
+    //--------------------------------------------------------------------------
+    // GET AND SET
+    //--------------------------------------------------------------------------
 public:
-	// TYPE
-	virtual std::string getTypeName() const override;
-	// VALUE
-	virtual void setValue(const Array<int> &aArray);
-	virtual void setValue(int aSize,const int aArray[]);
-	virtual Array<int>& getValueIntArray();
-	virtual const Array<int>& getValueIntArray() const;
-	// SIZE
-	virtual int getArraySize() const { return _array.getSize(); }
-	// VALUE as String
-	virtual std::string toString() const;
-    virtual void clearValues() override {
+    // TYPE
+    std::string getTypeName() const override;
+    // VALUE
+    virtual void setValue(const Array<int> &aArray);
+    virtual void setValue(int aSize,const int aArray[]);
+    virtual Array<int>& getValueIntArray();
+    virtual const Array<int>& getValueIntArray() const;
+    // SIZE
+    virtual int getArraySize() const { return _array.getSize(); }
+    // VALUE as String
+    virtual std::string toString() const;
+    void clearValues() override {
         _array.setSize(0);
     }
 
 //=============================================================================
-};	// END of class PropertyIntArray
+};  // END of class PropertyIntArray
 
 }; //namespace
 //=============================================================================
 //=============================================================================
 
-#endif //__PropertyIntArray_h__
+#endif // OPENSIM_PROPERTY_INT_ARRAY_H_

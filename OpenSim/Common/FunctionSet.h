@@ -27,9 +27,6 @@
  * Author: Frank C. Anderson 
  */
 
-
-
-
 // INCLUDES
 #include "osimCommonDLL.h"
 #include "Object.h"
@@ -39,14 +36,14 @@
 
 //=============================================================================
 //=============================================================================
+namespace OpenSim { 
+
 /**
  * A class for holding a set of functions.
  *
  * @see Function
  * @author Frank C. Anderson
  */
-namespace OpenSim { 
-
 class OSIMCOMMON_API FunctionSet : public Set<Function> {
 OpenSim_DECLARE_CONCRETE_OBJECT(FunctionSet, Set<Function>);
 
@@ -58,29 +55,29 @@ OpenSim_DECLARE_CONCRETE_OBJECT(FunctionSet, Set<Function>);
 // METHODS
 //=============================================================================
 public:
-	//--------------------------------------------------------------------------
-	// CONSTRUCTION
-	//--------------------------------------------------------------------------
-	FunctionSet();
-	FunctionSet(const std::string &aFileName);
-	virtual ~FunctionSet();
+    //--------------------------------------------------------------------------
+    // CONSTRUCTION
+    //--------------------------------------------------------------------------
+    FunctionSet();
+    FunctionSet(const std::string &aFileName);
+    virtual ~FunctionSet();
 
 private:
-	void setNull();
+    void setNull();
 
 public:
-	//--------------------------------------------------------------------------
-	// EVALUATION
-	//--------------------------------------------------------------------------
-	virtual double
-		evaluate(int aIndex,int aDerivOrder,
-		double aX=0.0) const;
-	virtual void
-		evaluate(Array<double> &rValues,int aDerivOrder,
-		double aX=0.0) const;
+    //--------------------------------------------------------------------------
+    // EVALUATION
+    //--------------------------------------------------------------------------
+    virtual double
+        evaluate(int aIndex,int aDerivOrder,
+        double aX=0.0) const;
+    virtual void
+        evaluate(Array<double> &rValues,int aDerivOrder,
+        double aX=0.0) const;
 
 //=============================================================================
-};	// END class FunctionSet
+};  // END class FunctionSet
 
 
 }; //namespace

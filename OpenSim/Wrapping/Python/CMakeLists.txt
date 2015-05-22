@@ -3,15 +3,15 @@ SET(UKIT PYOPENSIM)
 
 IF(BUILD_PYTHON_WRAPPING)
 
-INCLUDE(${CMAKE_ROOT}/Modules/FindPythonLibs.cmake)
-INCLUDE(${CMAKE_ROOT}/Modules/FindPythonInterp.cmake)
+FIND_PACKAGE(PythonLibs 2.7)
+#FIND_PACKAGE(PythonInterp 2.7)
 
 
 IF(NOT PYTHONLIBS_FOUND)
     MESSAGE(FATAL_ERROR "Cannot build Python wrapping because "
     	"Python libraries were not found. Either turn "
     	"BUILD_PYTHON_WRAPPING off or install Python "
-    	"libraries (on Ubuntu, apt-get install python2.7-dev).")
+        "libraries (on Ubuntu, sudo apt-get install python2.7-dev).")
 ENDIF()
 
 
@@ -23,17 +23,14 @@ SET(swig_output_cxx_file_fullname
     ${CMAKE_CURRENT_BINARY_DIR}/pyOpenSim_wrap.cxx)
 SET(swig_output_header_file_fullname
     ${CMAKE_CURRENT_BINARY_DIR}/pyOpenSim_wrap.h)
-
 SET(swig_common_interface_file_fullname
     ${OpenSim_SOURCE_DIR}/OpenSim/Wrapping/Python/swig/pyWrapOpenSimCommon.i)
 SET(swig_interface_file_fullname
     ${OpenSim_SOURCE_DIR}/OpenSim/Wrapping/Python/swig/pyWrapOpenSim.i)
-
 SET(swig_common_python_file_fullname
     ${CMAKE_CURRENT_BINARY_DIR}/common.py)
 SET(swig_python_file_fullname
     ${CMAKE_CURRENT_BINARY_DIR}/simulation.py)
-SET(SimTK_INCLUDE_PATH ${SIMTK_INCLUDE_DIR})
 
 # Using a custom command / custom target pair so that SWIG is only run when
 # it's out of date. Previously, we used a custom target only. But, custom
@@ -81,12 +78,22 @@ ADD_CUSTOM_TARGET(PyWrap
 
 SET_TARGET_PROPERTIES(PyWrap PROPERTIES PROJECT_LABEL "Python Bindings - Generate")
 
-# Preliminary stuff for building libraries.
-# -----------------------------------------
+SET(SOURCE_FILES OpenSimContext.cpp "${swig_output_cxx_file_fullname}")
+SET(INCLUDE_FILES OpenSimContext.h "${swig_output_header_file_fullname}")
+
+# swig 2.0.10 uses the c++ register keyword, which Clang tells us is
+# deprecated. While still using swig 2.0.10, we suppress this warning.
+# In some versions of Clang, this warning is Wdeprecated-register.
+IF (${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
+    SET_SOURCE_FILES_PROPERTIES("${swig_output_cxx_file_fullname}"
+        PROPERTIES COMPILE_FLAGS "-Wno-deprecated")
+ENDIF()
+
 INCLUDE_DIRECTORIES(${OpenSim_SOURCE_DIR} 
 					${OpenSim_SOURCE_DIR}/Vendors 
 					${PYTHON_INCLUDE_PATH}
 )
+
 
 LINK_LIBRARIES(osimCommon osimSimulation osimAnalyses osimTools osimActuators
     ${PYTHON_LIBRARIES})

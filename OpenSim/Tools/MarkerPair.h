@@ -34,6 +34,8 @@
 
 //=============================================================================
 //=============================================================================
+namespace OpenSim {
+
 /**
  * A class for holding the names of a pair of markers (for making
  * measurements on a model).
@@ -41,8 +43,6 @@
  * @author Peter Loan
  * @version 1.0
  */
-namespace OpenSim { 
-
 class OSIMTOOLS_API MarkerPair : public Object {
 OpenSim_DECLARE_CONCRETE_OBJECT(MarkerPair, Object);
 
@@ -52,42 +52,42 @@ OpenSim_DECLARE_CONCRETE_OBJECT(MarkerPair, Object);
 private:
 
 protected:
-	PropertyStrArray _markerNamesProp;
-	Array<std::string>& _markerNames;
+    PropertyStrArray _markerNamesProp;
+    Array<std::string>& _markerNames;
 
 //=============================================================================
 // METHODS
 //=============================================================================
-	//--------------------------------------------------------------------------
-	// CONSTRUCTION
-	//--------------------------------------------------------------------------
+    //--------------------------------------------------------------------------
+    // CONSTRUCTION
+    //--------------------------------------------------------------------------
 public:
-	MarkerPair();
-	MarkerPair(const MarkerPair &aMarkerPair);
-	MarkerPair(const std::string &aName1, const std::string &aName2);
-	virtual ~MarkerPair();
+    MarkerPair();
+    MarkerPair(const MarkerPair &aMarkerPair);
+    MarkerPair(const std::string &aName1, const std::string &aName2);
+    virtual ~MarkerPair();
 
 #ifndef SWIG
-	MarkerPair& operator=(const MarkerPair &aMarkerPair);
+    MarkerPair& operator=(const MarkerPair &aMarkerPair);
 #endif
-	void copyData(const MarkerPair &aMarkerPair);
+    void copyData(const MarkerPair &aMarkerPair);
 
-	void getMarkerNames(std::string& aName1, std::string& aName2) const;
-	const std::string &getMarkerName(int i) const { 
+    void getMarkerNames(std::string& aName1, std::string& aName2) const;
+    const std::string &getMarkerName(int i) const { 
         if (_markerNames.getSize() < i+1)
             throw Exception("MarkerPair: ERROR- Pair has incorrect number of Marker names, 2 required.",
-							 __FILE__,__LINE__);
+                             __FILE__,__LINE__);
         return _markerNames.get(i); 
     }
-	void setMarkerName(int i, const std::string &aName) { _markerNames.set(i,aName); }
+    void setMarkerName(int i, const std::string &aName) { _markerNames.set(i,aName); }
 
 protected:
 
 private:
-	void setNull();
-	void setupProperties();
+    void setNull();
+    void setupProperties();
 //=============================================================================
-};	// END of class MarkerPair
+};  // END of class MarkerPair
 
 }; //namespace
 //=============================================================================

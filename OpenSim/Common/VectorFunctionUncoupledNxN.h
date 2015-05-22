@@ -1,5 +1,5 @@
-#ifndef _VectorFunctionUncoupledNxN_h_
-#define _VectorFunctionUncoupledNxN_h_
+#ifndef OPENSIM_VECTOR_FUNCTION_UNCOUPLED_NXN_H_
+#define OPENSIM_VECTOR_FUNCTION_UNCOUPLED_NXN_H_
 /* -------------------------------------------------------------------------- *
  *                   OpenSim:  VectorFunctionUncoupledNxN.h                   *
  * -------------------------------------------------------------------------- *
@@ -38,6 +38,8 @@
 
 //=============================================================================
 //=============================================================================
+namespace OpenSim { 
+
 /**
  * An abstract class for representing a vector function.
  *
@@ -53,8 +55,6 @@
  *
  * @author Frank C. Anderson and Saryn R. Goldberg
  */
-namespace OpenSim { 
-
 class OSIMCOMMON_API VectorFunctionUncoupledNxN : public VectorFunction {
 OpenSim_DECLARE_ABSTRACT_OBJECT(VectorFunctionUncoupledNxN, VectorFunction);
 
@@ -69,47 +69,47 @@ protected:
 // METHODS
 //=============================================================================
 public:
-	//--------------------------------------------------------------------------
-	// CONSTRUCTION
-	//--------------------------------------------------------------------------
-	VectorFunctionUncoupledNxN();
-	VectorFunctionUncoupledNxN(int aN);
-	VectorFunctionUncoupledNxN(const VectorFunctionUncoupledNxN &aFunction);
-	virtual ~VectorFunctionUncoupledNxN();
+    //--------------------------------------------------------------------------
+    // CONSTRUCTION
+    //--------------------------------------------------------------------------
+    VectorFunctionUncoupledNxN();
+    VectorFunctionUncoupledNxN(int aN);
+    VectorFunctionUncoupledNxN(const VectorFunctionUncoupledNxN &aFunction);
+    virtual ~VectorFunctionUncoupledNxN();
 
 private:
-	void setNull();
-	void setEqual(const VectorFunctionUncoupledNxN &aVectorFunction);
+    void setNull();
+    void setEqual(const VectorFunctionUncoupledNxN &aVectorFunction);
 
-	//--------------------------------------------------------------------------
-	// OPERATORS
-	//--------------------------------------------------------------------------
+    //--------------------------------------------------------------------------
+    // OPERATORS
+    //--------------------------------------------------------------------------
 public:
-	VectorFunctionUncoupledNxN&
-		operator=(const VectorFunctionUncoupledNxN &aFunction);
+    VectorFunctionUncoupledNxN&
+        operator=(const VectorFunctionUncoupledNxN &aFunction);
 
-	//--------------------------------------------------------------------------
-	// SET AND GET
-	//--------------------------------------------------------------------------
-	
-	//--------------------------------------------------------------------------
-	// EVALUATE
-	//--------------------------------------------------------------------------
-	virtual void evaluate( const SimTK::State& s, const double *aX, double *rF) { 
-		std::cout << "VectorFunctionUncoupledNxN UNIMPLEMENTED: evaluate( const SimTK::State&, const double*, double*)" << std::endl;
-	}
-	virtual void evaluate( const SimTK::State& s, const Array<double> &aX, Array<double> &rF){
-		std::cout << "VectorFunctionUncoupledNxN UNIMPLEMENTED: evaluate( const SimTK::State&, const Array<double>, Array<double>)" << std::endl;
-	}
-	virtual void evaluate( const SimTK::State& s, const Array<double> &aX, Array<double> &rF, const Array<int> &aDerivWRT){
-		std::cout << "VectorFunctionUncoupledNxN UNIMPLEMENTED: evaluate( const SimTK::State&, const Array<double>&a, Array<double>&, const Array<int>&)" << std::endl;
-	}
+    //--------------------------------------------------------------------------
+    // SET AND GET
+    //--------------------------------------------------------------------------
+    
+    //--------------------------------------------------------------------------
+    // EVALUATE
+    //--------------------------------------------------------------------------
+    virtual void evaluate( const SimTK::State& s, const double *aX, double *rF) { 
+        std::cout << "VectorFunctionUncoupledNxN UNIMPLEMENTED: evaluate( const SimTK::State&, const double*, double*)" << std::endl;
+    }
+    virtual void evaluate( const SimTK::State& s, const Array<double> &aX, Array<double> &rF){
+        std::cout << "VectorFunctionUncoupledNxN UNIMPLEMENTED: evaluate( const SimTK::State&, const Array<double>, Array<double>)" << std::endl;
+    }
+    virtual void evaluate( const SimTK::State& s, const Array<double> &aX, Array<double> &rF, const Array<int> &aDerivWRT){
+        std::cout << "VectorFunctionUncoupledNxN UNIMPLEMENTED: evaluate( const SimTK::State&, const Array<double>&a, Array<double>&, const Array<int>&)" << std::endl;
+    }
 
 //=============================================================================
-};	// END class VectorFunctionUncoupledNxN
+};  // END class VectorFunctionUncoupledNxN
 
 }; //namespace
 //=============================================================================
 //=============================================================================
 
-#endif  // __VectorFunctionUncoupledNxN_h__
+#endif // OPENSIM_VECTOR_FUNCTION_UNCOUPLED_NXN_H_

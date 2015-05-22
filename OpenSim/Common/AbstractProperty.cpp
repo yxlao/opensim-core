@@ -43,7 +43,7 @@ using namespace std;
  */
 AbstractProperty::AbstractProperty()
 {
-	setNull();
+    setNull();
 }
 //_____________________________________________________________________________
 /**
@@ -53,8 +53,8 @@ AbstractProperty::AbstractProperty(const std::string& name,
                                    const std::string& comment)
 {
     setNull();
-	_name       = name;
-	_comment    = comment;
+    _name       = name;
+    _comment    = comment;
 }
 
 
@@ -64,11 +64,11 @@ AbstractProperty::AbstractProperty(const std::string& name,
  */
 void AbstractProperty::setNull()
 {
-	_name           = "";
+    _name           = "";
     _comment        = "";
-	_valueIsDefault = false;
-	_minListSize    = 0;
-	_maxListSize    = std::numeric_limits<int>::max();
+    _valueIsDefault = false;
+    _minListSize    = 0;
+    _maxListSize    = std::numeric_limits<int>::max();
 }
 
 void AbstractProperty::clear() {
@@ -190,14 +190,14 @@ void AbstractProperty::readFromXMLParentElement(Xml::Element& parent,
     parent.insertNodeBefore(prev, 
                             dummy.removeNode(dummy.element_begin()));
     setValueIsDefault(false);
-	dummy.clearOrphan();
+    dummy.clearOrphan();
 }
 
 
-void AbstractProperty::writeToXMLParentElement(Xml::Element& parent) {
-	// Add comment if any.
-	if (!getComment().empty())
-		parent.insertNodeAfter(parent.node_end(), Xml::Comment(getComment()));
+void AbstractProperty::writeToXMLParentElement(Xml::Element& parent) const {
+    // Add comment if any.
+    if (!getComment().empty())
+        parent.insertNodeAfter(parent.node_end(), Xml::Comment(getComment()));
 
     if (!isOneObjectProperty()) {
         // Concrete property will be represented by an Xml element of
@@ -216,12 +216,15 @@ void AbstractProperty::writeToXMLParentElement(Xml::Element& parent) {
     //      <ObjectTypeTag ...> value </ObjectTypeTag> 
     // otherwise.
 
-    Object& obj = updValueAsObject();
+    const Object& obj = getValueAsObject();
 
     // If this is a named property then the lone object must have its
     // name attribute set to the property name.
-    obj.setName(isUnnamedProperty() ? "" : getName());
-
+    //
+    // KLUDGE: We shouldn't const_cast here to change obj name, instead the 
+    // name of the object should be set ahead of time. Revisit when DeprecatedProperties are gone.
+    // -Ayman 09/14
+    (const_cast<Object&>(obj)).setName(isUnnamedProperty() ? "" : getName());
     obj.updateXMLNode(parent);
 }
 

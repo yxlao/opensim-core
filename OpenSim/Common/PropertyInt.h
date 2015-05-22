@@ -1,5 +1,5 @@
-#ifndef _PropertyInt_h_
-#define _PropertyInt_h_
+#ifndef OPENSIM_PROPERTY_INT_H_
+#define OPENSIM_PROPERTY_INT_H_
 /* -------------------------------------------------------------------------- *
  *                          OpenSim:  PropertyInt.h                           *
  * -------------------------------------------------------------------------- *
@@ -36,6 +36,8 @@
 
 //=============================================================================
 //=============================================================================
+namespace OpenSim { 
+
 /**
  * Class PropertyInt extends class Property.  It consists of an integer
  * value and the methods for accessing and modifying this value.
@@ -43,8 +45,6 @@
  * @version 1.0
  * @author Frank C. Anderson
  */
-namespace OpenSim { 
-
 class OSIMCOMMON_API PropertyInt : public Property_Deprecated
 {
 
@@ -52,45 +52,45 @@ class OSIMCOMMON_API PropertyInt : public Property_Deprecated
 // DATA
 //=============================================================================
 private:
-	/** Value. */
-	int _value;
+    /** Value. */
+    int _value;
 
 //=============================================================================
 // METHODS
 //=============================================================================
-	//--------------------------------------------------------------------------
-	// CONSTRUCTION
-	//--------------------------------------------------------------------------
+    //--------------------------------------------------------------------------
+    // CONSTRUCTION
+    //--------------------------------------------------------------------------
 public:
-	PropertyInt();
-	PropertyInt(const std::string &aName,int aValue);
-	PropertyInt(const PropertyInt &aProperty);
-	/*virtual*/ PropertyInt* clone() const;
+    PropertyInt();
+    PropertyInt(const std::string &aName,int aValue);
+    PropertyInt(const PropertyInt &aProperty);
+    /*virtual*/ PropertyInt* clone() const;
 
-	//--------------------------------------------------------------------------
-	// OPERATORS
-	//--------------------------------------------------------------------------
+    //--------------------------------------------------------------------------
+    // OPERATORS
+    //--------------------------------------------------------------------------
 public:
-	PropertyInt& operator=(const PropertyInt &aProperty);
+    PropertyInt& operator=(const PropertyInt &aProperty);
 
-	//--------------------------------------------------------------------------
-	// GET AND SET
-	//--------------------------------------------------------------------------
+    //--------------------------------------------------------------------------
+    // GET AND SET
+    //--------------------------------------------------------------------------
 public:
-	// TYPE
-	virtual std::string getTypeName() const override;
-	// VALUE
-	virtual void setValue(int aValue);
-	virtual int& getValueInt();
-	virtual const int& getValueInt() const;
-	// VALUE as String
-	virtual std::string toString() const;
+    // TYPE
+    std::string getTypeName() const override;
+    // VALUE
+    virtual void setValue(int aValue);
+    virtual int& getValueInt();
+    virtual const int& getValueInt() const;
+    // VALUE as String
+    virtual std::string toString() const;
 
 //=============================================================================
-};	// END of class PropertyInt
+};  // END of class PropertyInt
 
 }; //namespace
 //=============================================================================
 //=============================================================================
 
-#endif //__PropertyInt_h__
+#endif // OPENSIM_PROPERTY_INT_H_

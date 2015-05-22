@@ -4,7 +4,6 @@
 
 /** Pass Doxygen documentation to python wrapper */
 %feature("autodoc", "3");
-
 /*
 For consistency with the rest of the API, we use camel-case for variable names.
 This breaks Python PEP 8 convention, but allows us to be consistent within our
@@ -15,7 +14,6 @@ own project.
 #define SWIG_FILE_WITH_INIT
 
 #include <SimTKsimbody.h>
-
 #include <OpenSim/Common/osimCommonDLL.h>
 #include <OpenSim/Common/Exception.h>
 #include <OpenSim/Common/Array.h>
@@ -66,6 +64,9 @@ own project.
 #include <OpenSim/Simulation/InverseDynamicsSolver.h>
 #include <OpenSim/Simulation/MomentArmSolver.h>
 
+#include <OpenSim/Simulation/Model/Frame.h>
+#include <OpenSim/Simulation/Model/PhysicalFrame.h>
+#include <OpenSim/Simulation/Model/Ground.h>
 #include <OpenSim/Simulation/Model/Force.h>
 #include <OpenSim/Simulation/Model/PrescribedForce.h>
 #include <OpenSim/Simulation/Model/CoordinateLimitForce.h>
@@ -95,6 +96,7 @@ own project.
 #include <OpenSim/Simulation/Model/Actuator.h>
 #include <OpenSim/Simulation/Model/ModelVisualizer.h>
 #include <OpenSim/Simulation/Model/Model.h>
+#include <OpenSim/Simulation/Model/PhysicalFrame.h>
 #include <OpenSim/Simulation/Control/Control.h>
 #include <OpenSim/Simulation/Control/ControlSet.h>
 #include <OpenSim/Simulation/Control/ControlConstant.h>
@@ -199,6 +201,7 @@ own project.
 #include <OpenSim/Actuators/CoordinateActuator.h>
 #include <OpenSim/Actuators/PointActuator.h>
 #include <OpenSim/Actuators/TorqueActuator.h>
+#include <OpenSim/Actuators/BodyActuator.h>
 #include <OpenSim/Actuators/PointToPointActuator.h>
 #include <OpenSim/Actuators/ClutchedPathSpring.h>
 #include <OpenSim/Actuators/SpringGeneralizedForce.h>
@@ -245,10 +248,11 @@ using namespace SimTK;
 %}
 
 %import pyWrapOpenSimCommon.i
-
 %feature("director") OpenSim::AnalysisWrapper;
-
+%feature("director") OpenSim::SimtkLogCallback;
+%feature("director") SimTK::DecorativeGeometryImplementation;
 %feature("notabstract") ControlLinear;
+
 
 // Memory management
 // =================
@@ -269,6 +273,8 @@ note: ## is a "glue" operator: `a ## b` --> `ab`.
 MODEL_ADOPT_HELPER(ModelComponent);
 MODEL_ADOPT_HELPER(Body);
 MODEL_ADOPT_HELPER(Probe);
+MODEL_ADOPT_HELPER(Joint);
+MODEL_ADOPT_HELPER(Frame);
 MODEL_ADOPT_HELPER(Constraint);
 MODEL_ADOPT_HELPER(ContactGeometry);
 MODEL_ADOPT_HELPER(Analysis);
@@ -294,6 +300,8 @@ JOINT_ADOPT_HELPER(GimbalJoint);
 JOINT_ADOPT_HELPER(UniversalJoint);
 JOINT_ADOPT_HELPER(PlanarJoint);
 
+
+
 // osimSimulation
 %include <OpenSim/Simulation/osimSimulationDLL.h>
 %include <OpenSim/Simulation/Model/ModelComponent.h>
@@ -308,6 +316,9 @@ JOINT_ADOPT_HELPER(PlanarJoint);
 %include <OpenSim/Simulation/InverseDynamicsSolver.h>
 %include <OpenSim/Simulation/MomentArmSolver.h>
 
+%include <OpenSim/Simulation/Model/Frame.h>
+%include <OpenSim/Simulation/Model/PhysicalFrame.h>
+%include <OpenSim/Simulation/Model/Ground.h>
 %include <OpenSim/Simulation/Model/Force.h>
 %template(SetForces) OpenSim::Set<OpenSim::Force>;
 %template(ModelComponentSetForces) OpenSim::ModelComponentSet<OpenSim::Force>;
@@ -354,6 +365,7 @@ JOINT_ADOPT_HELPER(PlanarJoint);
 
 %include <OpenSim/Simulation/Manager/Manager.h>
 %include <OpenSim/Simulation/Model/AbstractTool.h>
+%include <OpenSim/Simulation/Model/Station.h>
 %include <OpenSim/Simulation/Model/Marker.h>
 %template(SetMarkers) OpenSim::Set<OpenSim::Marker>;
 %include <OpenSim/Simulation/Model/MarkerSet.h>
@@ -471,6 +483,7 @@ JOINT_ADOPT_HELPER(PlanarJoint);
 %include <OpenSim/Actuators/CoordinateActuator.h>
 %include <OpenSim/Actuators/PointActuator.h>
 %include <OpenSim/Actuators/TorqueActuator.h>
+%include <OpenSim/Actuators/BodyActuator.h>
 %include <OpenSim/Actuators/PointToPointActuator.h>
 %include <OpenSim/Actuators/ClutchedPathSpring.h>
 %include <OpenSim/Actuators/SpringGeneralizedForce.h>
@@ -537,24 +550,17 @@ JOINT_ADOPT_HELPER(PlanarJoint);
  See pyWrapOpenSimCommon.i for the SET_ADOPT_HELPER macro.
 */ 
 
-SET_ADOPT_HELPER(Force);
-SET_ADOPT_HELPER(Controller);
-SET_ADOPT_HELPER(ContactGeometry);
-SET_ADOPT_HELPER(Analysis);
-SET_ADOPT_HELPER(Control);
-SET_ADOPT_HELPER(Marker);
-SET_ADOPT_HELPER(Body);
 SET_ADOPT_HELPER(BodyScale);
-SET_ADOPT_HELPER(Coordinate);
-SET_ADOPT_HELPER(Joint);
-SET_ADOPT_HELPER(Constraint);
 SET_ADOPT_HELPER(PathPoint);
 SET_ADOPT_HELPER(IKTask);
 SET_ADOPT_HELPER(MarkerPair);
 SET_ADOPT_HELPER(Measurement);
+SET_ADOPT_HELPER(Marker);
+SET_ADOPT_HELPER(Control);
 
 // These didn't work with the macro for some reason. I got complaints about
 // multiple definitions of, e.g.,  Function in the target language.
+
 %extend OpenSim::ProbeSet {
 %pythoncode %{
     def adoptAndAppend(self, aProbe):

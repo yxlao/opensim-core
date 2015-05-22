@@ -51,17 +51,17 @@ OpenSim_DECLARE_CONCRETE_OBJECT(ControllerSet, ModelComponentSet<Controller>);
 //=============================================================================
 // METHODS
 //=============================================================================
-	//--------------------------------------------------------------------------
-	// CONSTRUCTION
-	//--------------------------------------------------------------------------
+    //--------------------------------------------------------------------------
+    // CONSTRUCTION
+    //--------------------------------------------------------------------------
 public:
-	ControllerSet() {}
-	ControllerSet(Model& model);
-	ControllerSet(const ControllerSet &aControllerSet);
-	ControllerSet(Model& model, const std::string &aFileName,  bool aUpdateFromXMLNode = true);
-	virtual ~ControllerSet();
+    ControllerSet() {}
+    ControllerSet(Model& model);
+    ControllerSet(const ControllerSet &aControllerSet);
+    ControllerSet(Model& model, const std::string &aFileName,  bool aUpdateFromXMLNode = true);
+    virtual ~ControllerSet();
 
-	void copyData(const ControllerSet &aAbsControllerSet);
+    void copyData(const ControllerSet &aAbsControllerSet);
 private:
 
     /**
@@ -75,37 +75,35 @@ private:
      SimTK::ReferencePtr<Set<Actuator> > _actuatorSet;
 
 
-	//--------------------------------------------------------------------------
-	// OPERATORS
-	//--------------------------------------------------------------------------
+    //--------------------------------------------------------------------------
+    // OPERATORS
+    //--------------------------------------------------------------------------
 public:
 #ifndef SWIG
-	ControllerSet& operator=(const ControllerSet &aSet);
+    ControllerSet& operator=(const ControllerSet &aSet);
 #endif
-	//--------------------------------------------------------------------------
-	// GET AND SET
-	//--------------------------------------------------------------------------
+    //--------------------------------------------------------------------------
+    // GET AND SET
+    //--------------------------------------------------------------------------
 public:
 
-	bool set(int aIndex, Controller *aController);
+    bool set(int aIndex, Controller *aController);
     bool addController(Controller *aController);
 
 
-    virtual void constructStorage();
-    virtual void storeControls( const SimTK::State& s, int step );
-    virtual void printControlStorage( const std::string& fileName) const;
-    virtual void setActuators( Set<Actuator>& );
+    void constructStorage();
+    void storeControls( const SimTK::State& s, int step );
+    void printControlStorage( const std::string& fileName) const;
+    void setActuators(Set<Actuator>& actuators);
 
-    virtual bool check() const;
+    void setDesiredStates( Storage* yStore); 
 
-    virtual void setDesiredStates( Storage* yStore); 
-
-	// Controller interface
-	virtual void computeControls(const SimTK::State& s, SimTK::Vector &controls) const; 
+    // Controller interface
+    virtual void computeControls(const SimTK::State& s, SimTK::Vector &controls) const; 
 
     virtual void printInfo() const;
 //=============================================================================
-};	// END of class ControllerSet
+};  // END of class ControllerSet
 //=============================================================================
 //=============================================================================
 

@@ -51,7 +51,7 @@ UniversalJoint::~UniversalJoint()
 UniversalJoint::UniversalJoint() : Joint()
 {
     setAuthors("Tim Dorn");
-	constructCoordinates();
+    constructCoordinates();
 
     const CoordinateSet& coordinateSet = get_CoordinateSet();
     coordinateSet[0].setMotionType(Coordinate::Rotational);
@@ -62,13 +62,19 @@ UniversalJoint::UniversalJoint() : Joint()
 /**
  * Convenience Constructor.
  */
-    UniversalJoint::UniversalJoint(const std::string &name, OpenSim::Body& parent, SimTK::Vec3 locationInParent, SimTK::Vec3 orientationInParent,
-                    OpenSim::Body& body, SimTK::Vec3 locationInBody, SimTK::Vec3 orientationInBody, bool reverse) :
-    Joint(name, parent, locationInParent,orientationInParent,
-            body, locationInBody, orientationInBody, reverse)
+UniversalJoint::UniversalJoint(const std::string &name,
+    const PhysicalFrame& parent,
+    const SimTK::Vec3& locationInParent,
+    const SimTK::Vec3& orientationInParent,
+    const PhysicalFrame& child,
+    const SimTK::Vec3& locationInChild,
+    const SimTK::Vec3& orientationInChild,
+    bool reverse) :
+        Joint(name, parent, locationInParent,orientationInParent,
+            child, locationInChild, orientationInChild, reverse)
 {
     setAuthors("Tim Dorn");
-	constructCoordinates();
+    constructCoordinates();
 
     const CoordinateSet& coordinateSet = get_CoordinateSet();
     coordinateSet[0].setMotionType(Coordinate::Rotational);
@@ -79,10 +85,7 @@ UniversalJoint::UniversalJoint() : Joint()
 // Simbody Model building.
 //=============================================================================
 //_____________________________________________________________________________
-void UniversalJoint::addToSystem(SimTK::MultibodySystem& system) const
+void UniversalJoint::extendAddToSystem(SimTK::MultibodySystem& system) const
 {
-	createMobilizedBody<MobilizedBody::Universal>(system);
-
-    // TODO: Joints require super class to be called last.
-    Super::addToSystem(system);
+    createMobilizedBody<MobilizedBody::Universal>(system);
 }

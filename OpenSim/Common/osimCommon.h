@@ -38,7 +38,9 @@
 #include "Sine.h"
 #include "StepFunction.h"
 #include "LinearFunction.h"
+#include "PiecewiseConstantFunction.h"
 #include "PiecewiseLinearFunction.h"
+
 #include "MultiplierFunction.h"
 #include "PolynomialFunction.h"
 
@@ -46,7 +48,7 @@
 #include "ObjectGroup.h"
 #include "StorageInterface.h"
 #include "LoadOpenSimLibrary.h"
-#include "RegisterTypes_osimCommon.h"	// to expose RegisterTypes_osimCommon
+#include "RegisterTypes_osimCommon.h"   // to expose RegisterTypes_osimCommon
 #include "SmoothSegmentedFunctionFactory.h"
 
 #endif // _osimCommon_h_
