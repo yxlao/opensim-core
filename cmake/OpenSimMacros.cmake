@@ -230,15 +230,16 @@ endfunction()
 #   OpenSimAddApplication(forward)
 function(OpenSimAddApplication APPNAME)
 
+    set(target_name opensim-${APPNAME})
     include_directories(${OpenSim_SOURCE_DIR} ${OpenSim_SOURCE_DIR}/Vendors)
-    add_executable(${APPNAME} ${APPNAME}.cpp)
-    target_link_libraries(${APPNAME} osimTools)
-    install(TARGETS ${APPNAME} DESTINATION bin)
-    set_target_properties(${APPNAME} PROPERTIES
+    add_executable(${target_name} ${APPNAME}.cpp)
+    target_link_libraries(${target_name} osimTools)
+    install(TARGETS ${target_name} DESTINATION bin)
+    set_target_properties(${target_name} PROPERTIES
         FOLDER "Applications")
 
     if(${OPENSIM_USE_INSTALL_RPATH})
-        set_target_properties(${APPNAME} PROPERTIES
+        set_target_properties(${target_name} PROPERTIES
             INSTALL_RPATH "\@executable_path/../lib"
             )
     endif()
