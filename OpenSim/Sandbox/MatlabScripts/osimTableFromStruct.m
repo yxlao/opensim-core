@@ -1,12 +1,3 @@
-function timeseriestable = osimTableFromStruct(structdata)
-%% // Convert Matlab Struct to OpenSim time Series Table
-%  Input is a Maltab stucture where data.lable = n X 1 or n x 3 array
-%  ie structdata.LASI = [2 3 4; 4 5 6, ...
-%
-%  One of the structure value MUST be a time vector and called 'time'
-%
-%  Output is an OpenSim TimesSeriesTable
-
 % ----------------------------------------------------------------------- %
 % The OpenSim API is a toolkit for musculoskeletal modeling and           %
 % simulation. See http://opensim.stanford.edu and the NOTICE file         %
@@ -29,10 +20,18 @@ function timeseriestable = osimTableFromStruct(structdata)
 % permissions and limitations under the License.                          %
 % ----------------------------------------------------------------------- %
 
+%% // Convert Matlab Struct to OpenSim time Series Table
+%  Input is a Maltab stucture where data.lable = n X 1 or n x 3 array
+%  ie structdata.LASI = [2 3 4; 4 5 6, ...
+%  One of the structures values MUST be a time vector and called 'time'
+%  Output is an OpenSim TimesSeriesTable
+
 % Author: James Dunne, Shrinidhi K. Lakshmikanth, Chris Dembia, Tom Uchida,
 % Ajay Seth, Ayman Habib, Jen Hicks.
 
-%%
+
+function timeseriestable = osimTableFromStruct(structdata)
+
 import org.opensim.modeling.*
 
 % get all the data labels
@@ -72,9 +71,6 @@ table.setColumnLabels(labels);
 
 %% get a pointer to the time column
 timeColumn = table.getIndependentColumn();
-
-
-
 
 if nCol == 1
     % If the data is in doubles, then build a table of doubles.

@@ -1,7 +1,3 @@
-
-
-
-
 clear all; close all; clc
 
 %% import opensim libraries 
@@ -50,9 +46,6 @@ data_new = data * 1000;
 for iRow = 0 : table.getNumRows - 1
     col3.set( iRow , data_new(iRow + 1) );    
 end 
-
-
-
 
 
 % Following construction of TimeSeriesTable succeeds because the DataTable
