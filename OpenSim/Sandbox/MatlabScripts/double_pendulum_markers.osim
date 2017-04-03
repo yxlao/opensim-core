@@ -39,7 +39,7 @@
 									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
 									<display_preference>4</display_preference>
 									<!--Display opacity between 0.0 and 1.0-->
-									<opacity>1</opacity>
+									<opacity>0.28</opacity>
 								</DisplayGeometry>
 							</objects>
 							<groups />
@@ -126,7 +126,7 @@
 									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
 									<display_preference>4</display_preference>
 									<!--Display opacity between 0.0 and 1.0-->
-									<opacity>1</opacity>
+									<opacity>0.28</opacity>
 								</DisplayGeometry>
 								<DisplayGeometry>
 									<!--Name of geometry file .vtp, .stl, .obj-->
@@ -142,7 +142,7 @@
 									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
 									<display_preference>4</display_preference>
 									<!--Display opacity between 0.0 and 1.0-->
-									<opacity>1</opacity>
+									<opacity>0.28</opacity>
 								</DisplayGeometry>
 							</objects>
 							<groups />
@@ -229,7 +229,7 @@
 									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
 									<display_preference>4</display_preference>
 									<!--Display opacity between 0.0 and 1.0-->
-									<opacity>1</opacity>
+									<opacity>0.28</opacity>
 								</DisplayGeometry>
 								<DisplayGeometry>
 									<!--Name of geometry file .vtp, .stl, .obj-->
@@ -245,7 +245,7 @@
 									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
 									<display_preference>4</display_preference>
 									<!--Display opacity between 0.0 and 1.0-->
-									<opacity>1</opacity>
+									<opacity>0.28</opacity>
 								</DisplayGeometry>
 							</objects>
 							<groups />
@@ -353,19 +353,19 @@
 					<!--Flag (true or false) specifying whether or not a marker should be kept fixed in the marker placement step.  i.e. If false, the marker is allowed to move.-->
 					<fixed>false</fixed>
 				</Marker>
-				<Marker name="NewMarker_5">
+				<Marker name="hjc">
 					<!--Body segment in the model on which the marker resides.-->
-					<body>rod2</body>
+					<body>ground</body>
 					<!--Location of a marker on the body segment.-->
-					<location> 0.0142437 0.0851817 -0.013332</location>
+					<location> 0 0 0</location>
 					<!--Flag (true or false) specifying whether or not a marker should be kept fixed in the marker placement step.  i.e. If false, the marker is allowed to move.-->
 					<fixed>false</fixed>
 				</Marker>
-				<Marker name="NewMarker_6">
+				<Marker name="lfc">
 					<!--Body segment in the model on which the marker resides.-->
-					<body>rod2</body>
+					<body>rod1</body>
 					<!--Location of a marker on the body segment.-->
-					<location> -0.0037006 0.440311 -0.0734172</location>
+					<location> 0 0 0.07</location>
 					<!--Flag (true or false) specifying whether or not a marker should be kept fixed in the marker placement step.  i.e. If false, the marker is allowed to move.-->
 					<fixed>false</fixed>
 				</Marker>
@@ -377,11 +377,11 @@
 					<!--Flag (true or false) specifying whether or not a marker should be kept fixed in the marker placement step.  i.e. If false, the marker is allowed to move.-->
 					<fixed>false</fixed>
 				</Marker>
-				<Marker name="NewMarker_8">
+				<Marker name="mfc">
 					<!--Body segment in the model on which the marker resides.-->
-					<body>rod2</body>
+					<body>rod1</body>
 					<!--Location of a marker on the body segment.-->
-					<location> 0.0349598 0.391778 0.00667671</location>
+					<location> 0 0 -0.07</location>
 					<!--Flag (true or false) specifying whether or not a marker should be kept fixed in the marker placement step.  i.e. If false, the marker is allowed to move.-->
 					<fixed>false</fixed>
 				</Marker>
