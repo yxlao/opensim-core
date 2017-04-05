@@ -1,10 +1,16 @@
+clear all; close all; clc;
 
 import org.opensim.modeling.*
 
 model = Model('double_pendulum_markers.osim');
 
+%% Build a new offset frame from the location of the markers
+% The markers are on the model, but we must first compute the location of
+% the frame in ground, compute the transform difference between the frame
+% in ground and the body we want to attach it to, the apply that transform
+% to a frame that we place on the body of interest. 
 
-%% Build the frame from the location of the markers
+% (i) compute a frame from the markers (ground)
 state = model.initSystem();
 markernames = [{'hjc'} {'lfc'} {'mfc'}];
 
@@ -12,43 +18,37 @@ for i = 1 : length(markernames)
     eval([markernames{i} ' = [model.getMarkerSet().get(markernames{i}).get_location().get(0) model.getMarkerSet().get(markernames{i}).get_location().get(1) model.getMarkerSet().get(markernames{i}).get_location().get(2)];']);
 end
 
-
-% for i = 1 : length(markernames)
-%     eval([markernames{i} ' = [model.getMarkerSet().get(markernames{i}).getLocationInGround(state).get(0) model.getMarkerSet().get(markernames{i}).getLocationInGround(state).get(1) model.getMarkerSet().get(markernames{i}).getLocationInGround(state).get(2)];']);
-% end
-
-% compute the unit vectors for the anatomical frame created by HJC, LFC,
-% MFC
-vec1  = lfc - mfc;
-firstAxis = vec1./norm(vec1);
+% compute the y,x,z unit vectors of the frame
 kjc = (lfc + mfc)/2;
-vec3 = hjc-kjc;
-thirdAxis = vec3./norm(vec3);
-vec2 = cross(thirdAxis,firstAxis); 
-secondAxis = vec2./norm(vec2);
-thirdAxis = cross(firstAxis,secondAxis); 
+zAxis = (mfc - lfc)./norm((mfc - lfc));
+yAxis = (hjc-kjc)./norm((hjc-kjc));
+xAxis = cross(yAxis,zAxis);
+xAxis = xAxis./norm(xAxis);
+yAxis = cross(zAxis,xAxis);
+yAxis = yAxis./norm(yAxis);
 
-% build the frame and set up the transform between the computed frame and
-% the 
+% build the rotation transform (y,x,z)
+rotMat  = Mat33(xAxis(1),xAxis(2),xAxis(3),...
+                yAxis(1),yAxis(2),yAxis(3),...
+                zAxis(1),zAxis(2),zAxis(3));
 
-
-rotMat  = Mat33(firstAxis(1),firstAxis(2),firstAxis(3),secondAxis(1),secondAxis(2),secondAxis(3),thirdAxis(1),thirdAxis(2),thirdAxis(3))
-
-r = Rotation()
-r.setRotationFromApproximateMat33(rotMat)
+t = Transform();            
 t.R().setRotationFromApproximateMat33(rotMat)
 t.setP(Vec3(0,0,0))
-
-%% add an offset frame to the model 
-rod1 = model.getBodySet().get(0);
+            
+%% add a a frame to rod1 given the calculated transform
+rod1 = model.getBodySet().get('rod1');
+rod2 = model.getBodySet().get('rod2');
 crosstalkframe = PhysicalOffsetFrame();
 crosstalkframe.setName('crosstalkframe')
 crosstalkframe.setParentFrame(rod1)
 crosstalkframe.setOffsetTransform(t)
 model.addComponent(crosstalkframe)
+state = model.initSystem();
+
 
 %% add coordinate reporter
-reportTimeInterval = 0.1;
+reportTimeInterval = 0.01;
 coordinateReporter = TableReporter();
 coordinateReporter.set_report_time_interval(reportTimeInterval);
 coordinateReporter.addToReport( ...
@@ -77,11 +77,16 @@ for i = 0 : coords.getNumRows - 1
     
     model.realizePosition(state);
     
-    % todo: do below!!!!!!!! 
-    rot = crosstalkframe.findTransformBetween(state, model.getBodySet().get(1));
-    % get the rotationcomponent
+    % get the transform between the frames
+    rot = rod2.findTransformBetween(state, crosstalkframe);
+
+    % get the rotation component of the transform
     r = rot.R();
-    % convert matrix to three rotational angles
+    % convert to axes to angles
+    
+    r.convertRotationToBodyFixedXYZ
+    
+    
     vec3_angles = r.convertThreeAxesRotationToThreeAngles(BodyOrSpaceType.BodyRotationSequence,...
                                           CoordinateAxis(0),...
                                           CoordinateAxis(1),...
@@ -90,6 +95,30 @@ for i = 0 : coords.getNumRows - 1
      angles(i+1,:) = [vec3_angles.get(0) vec3_angles.get(1) vec3_angles.get(2)];                                 
                                       
 end
+
+%% plot the results
+model_coords = osimTableToStruct(coords);
+
+hold on
+
+plot(rad2deg(angles))
+plot(rad2deg(model_coords.pin2_angle), 'r*--' )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

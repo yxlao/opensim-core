@@ -39,7 +39,7 @@
 									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
 									<display_preference>4</display_preference>
 									<!--Display opacity between 0.0 and 1.0-->
-									<opacity>0.28</opacity>
+									<opacity>0.3</opacity>
 								</DisplayGeometry>
 							</objects>
 							<groups />
@@ -87,7 +87,7 @@
 										<!--Coordinate can describe rotational, translational, or coupled motion. Defaults to rotational.-->
 										<motion_type>rotational</motion_type>
 										<!--The value of this coordinate before any value has been set. Rotational coordinate value is in radians and Translational in meters.-->
-										<default_value>-0.78539816</default_value>
+										<default_value>-1.5707963267949</default_value>
 										<!--The speed value of this coordinate before any value has been set. Rotational coordinate value is in rad/s and Translational in m/s.-->
 										<default_speed_value>0</default_speed_value>
 										<!--The minimum and maximum values that the coordinate can range between. Rotational coordinate range in radians and Translational in meters.-->
@@ -126,7 +126,7 @@
 									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
 									<display_preference>4</display_preference>
 									<!--Display opacity between 0.0 and 1.0-->
-									<opacity>0.28</opacity>
+									<opacity>0.3</opacity>
 								</DisplayGeometry>
 								<DisplayGeometry>
 									<!--Name of geometry file .vtp, .stl, .obj-->
@@ -142,7 +142,7 @@
 									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
 									<display_preference>4</display_preference>
 									<!--Display opacity between 0.0 and 1.0-->
-									<opacity>0.28</opacity>
+									<opacity>0.3</opacity>
 								</DisplayGeometry>
 							</objects>
 							<groups />
@@ -190,7 +190,7 @@
 										<!--Coordinate can describe rotational, translational, or coupled motion. Defaults to rotational.-->
 										<motion_type>rotational</motion_type>
 										<!--The value of this coordinate before any value has been set. Rotational coordinate value is in radians and Translational in meters.-->
-										<default_value>-1.04719755</default_value>
+										<default_value>-1.5707963267949</default_value>
 										<!--The speed value of this coordinate before any value has been set. Rotational coordinate value is in rad/s and Translational in m/s.-->
 										<default_speed_value>0</default_speed_value>
 										<!--The minimum and maximum values that the coordinate can range between. Rotational coordinate range in radians and Translational in meters.-->
@@ -229,7 +229,7 @@
 									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
 									<display_preference>4</display_preference>
 									<!--Display opacity between 0.0 and 1.0-->
-									<opacity>0.28</opacity>
+									<opacity>0.3</opacity>
 								</DisplayGeometry>
 								<DisplayGeometry>
 									<!--Name of geometry file .vtp, .stl, .obj-->
@@ -245,7 +245,7 @@
 									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
 									<display_preference>4</display_preference>
 									<!--Display opacity between 0.0 and 1.0-->
-									<opacity>0.28</opacity>
+									<opacity>0.3</opacity>
 								</DisplayGeometry>
 							</objects>
 							<groups />
@@ -355,17 +355,17 @@
 				</Marker>
 				<Marker name="hjc">
 					<!--Body segment in the model on which the marker resides.-->
-					<body>ground</body>
+					<body>rod1</body>
 					<!--Location of a marker on the body segment.-->
-					<location> 0 0 0</location>
+					<location> 0 0.5 0</location>
 					<!--Flag (true or false) specifying whether or not a marker should be kept fixed in the marker placement step.  i.e. If false, the marker is allowed to move.-->
 					<fixed>false</fixed>
 				</Marker>
-				<Marker name="lfc">
+				<Marker name="mfc">
 					<!--Body segment in the model on which the marker resides.-->
 					<body>rod1</body>
 					<!--Location of a marker on the body segment.-->
-					<location> 0 0 0.07</location>
+					<location> 0.0520414 -0.0175541 0.0447018</location>
 					<!--Flag (true or false) specifying whether or not a marker should be kept fixed in the marker placement step.  i.e. If false, the marker is allowed to move.-->
 					<fixed>false</fixed>
 				</Marker>
@@ -377,11 +377,11 @@
 					<!--Flag (true or false) specifying whether or not a marker should be kept fixed in the marker placement step.  i.e. If false, the marker is allowed to move.-->
 					<fixed>false</fixed>
 				</Marker>
-				<Marker name="mfc">
+				<Marker name="lfc">
 					<!--Body segment in the model on which the marker resides.-->
 					<body>rod1</body>
 					<!--Location of a marker on the body segment.-->
-					<location> 0 0 -0.07</location>
+					<location> -0.034632 0.024239 -0.0483408</location>
 					<!--Flag (true or false) specifying whether or not a marker should be kept fixed in the marker placement step.  i.e. If false, the marker is allowed to move.-->
 					<fixed>false</fixed>
 				</Marker>
