@@ -137,13 +137,31 @@ function(OpenSimAddLibrary)
     # RPATH (so that libraries find library dependencies)
     if(${OPENSIM_USE_INSTALL_RPATH})
         if(APPLE)
-            set(install_rpath "\@loader_path/")
+            set(rpath_macro "\@loader_path")
         elseif(UNIX)
-            set(install_rpath "\$ORIGIN/")
+            set(rpath_macro "\$ORIGIN")
+        endif()
+        set(run_path_list "${rpath_macro}/")
+        # If Simbody libraries are installed in their own directories (not
+        # beside OpenSim libraries), we must add this RPATH:
+        if(NOT ${OPENSIM_INSTALL_UNIX_FHS})
+            file(RELATIVE_PATH lib_dir_to_install_dir
+                "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}"
+                "${CMAKE_INSTALL_PREFIX}")
+            # The location of Simbody's libraries within the Simbody root.
+            file(RELATIVE_PATH simbody_root_dir_to_simbody_lib_dir
+                 "${Simbody_ROOT_DIR}" "${Simbody_LIB_DIR}")
+            # The location of Simbody's libraries relative to OpenSim's
+            # installation root.
+            set(install_dir_to_simbody_lib_dir
+               "${OPENSIM_INSTALL_SIMBODYDIR}/${simbody_root_dir_to_simbody_lib_dir}")
+            set(lib_dir_to_simbody_lib_dir
+                "${lib_dir_to_install_dir}${install_dir_to_simbody_lib_dir}")
+            list(APPEND run_path_list
+                   "${rpath_macro}/${lib_dir_to_simbody_lib_dir}")
         endif()
         set_property(TARGET ${OSIMADDLIB_LIBRARY_NAME} APPEND PROPERTY
-            INSTALL_RPATH "${install_rpath}"
-            )
+            INSTALL_RPATH "${run_path_list}")
     endif()
 
     # Testing.
@@ -249,7 +267,7 @@ endfunction()
 # Create an application/executable. To be used in the Appliations directory.
 # NAME: Name of the application. Must also be the name of the source file
 #   containing main() (without the .cpp extension).
-# SOURCES: Additional header/source files to compile into this target. 
+# SOURCES: Additional header/source files to compile into this target.
 #
 # Here's an example:
 #   OpenSimAddApplication(NAME opensim-cmd SOURCES opensim-cmd_run-tool.h)
@@ -263,7 +281,7 @@ function(OpenSimAddApplication)
     set(multiValueArgs SOURCES)
     cmake_parse_arguments(
         OSIMADDAPP "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
-    
+
     # Build.
     include_directories(${OpenSim_SOURCE_DIR} ${OpenSim_SOURCE_DIR}/Vendors)
     add_executable(${OSIMADDAPP_NAME} ${OSIMADDAPP_NAME}.cpp
@@ -289,8 +307,26 @@ function(OpenSimAddApplication)
             "${CMAKE_INSTALL_PREFIX}")
         set(bin_dir_to_lib_dir
             "${bin_dir_to_install_dir}${CMAKE_INSTALL_LIBDIR}")
+        set(run_path_list "${rpath_macro}/${bin_dir_to_lib_dir}")
+
+        # If Simbody libraries are installed in their own directories (not
+        # beside OpenSim libraries), we must add this RPATH:
+        if(NOT ${OPENSIM_INSTALL_UNIX_FHS})
+            # The location of Simbody's libraries within the Simbody root.
+            file(RELATIVE_PATH simbody_root_dir_to_simbody_lib_dir
+                 "${Simbody_ROOT_DIR}" "${Simbody_LIB_DIR}")
+            # The location of Simbody's libraries relative to OpenSim's
+            # installation root.
+            set(install_dir_to_simbody_lib_dir
+               "${OPENSIM_INSTALL_SIMBODYDIR}/${simbody_root_dir_to_simbody_lib_dir}")
+            set(bin_dir_to_simbody_lib_dir
+                "${bin_dir_to_install_dir}${install_dir_to_simbody_lib_dir}")
+            list(APPEND run_path_list
+                   "${rpath_macro}/${bin_dir_to_simbody_lib_dir}")
+        endif()
+
         set_property(TARGET ${OSIMADDAPP_NAME} APPEND PROPERTY
-            INSTALL_RPATH "${rpath_macro}/${bin_dir_to_lib_dir}")
+            INSTALL_RPATH "${run_path_list}")
     endif()
 
 endfunction()
@@ -328,9 +364,9 @@ function(OpenSimInstallDependencyLibraries PREFIX DEP_LIBS_DIR_WIN
 endfunction()
 
 
-# Function to copy DLL files from dependency install directory into OpenSim 
-# build and install directories. This is a Windows specific function enabled 
-# only for Windows platform. Intention is to allow runtime loader to find all 
+# Function to copy DLL files from dependency install directory into OpenSim
+# build and install directories. This is a Windows specific function enabled
+# only for Windows platform. Intention is to allow runtime loader to find all
 # the required DLLs without need for editing PATH variable.
 function(OpenSimCopyDependencyDLLsForWin DEP_NAME DEP_INSTALL_DIR)
     # On Windows, copy dlls into OpenSim binary directory.
@@ -401,4 +437,3 @@ macro(OpenSimFindSwigFileDependencies OSIMSWIGDEP_RETURNVAL
     unset(_successfully_got_dependencies)
 
 endmacro()
-

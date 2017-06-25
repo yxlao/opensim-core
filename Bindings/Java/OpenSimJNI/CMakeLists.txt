@@ -119,13 +119,34 @@ if(${OPENSIM_USE_INSTALL_RPATH})
     if(APPLE)
         # Adding @loader_rpath (the \ is to escape the @) to the run-path list
         # will let osimJavaJNI find osimTools, etc. 
-        set(install_rpath "\@loader_path/")
+        set(rpath_macro "\@loader_path")
     elseif(UNIX)
         # $ORIGIN is the equivalent mechanism on Linux.
-        set(install_rpath "\$ORIGIN/")
+        set(rpath_macro "\$ORIGIN")
     endif()
+    set(run_path_list "${rpath_macro}/")
+
+    # If Simbody libraries are installed in their own directories (not
+    # beside OpenSim libraries), we must add this RPATH:
+    if(NOT ${OPENSIM_INSTALL_UNIX_FHS})
+        file(RELATIVE_PATH lib_dir_to_install_dir
+            "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}"
+            "${CMAKE_INSTALL_PREFIX}")
+        # The location of Simbody's libraries within the Simbody root.
+        file(RELATIVE_PATH simbody_root_dir_to_simbody_lib_dir
+             "${Simbody_ROOT_DIR}" "${Simbody_LIB_DIR}")
+        # The location of Simbody's libraries relative to OpenSim's
+        # installation root.
+        set(install_dir_to_simbody_lib_dir
+           "${OPENSIM_INSTALL_SIMBODYDIR}/${simbody_root_dir_to_simbody_lib_dir}")
+        set(lib_dir_to_simbody_lib_dir
+            "${lib_dir_to_install_dir}${install_dir_to_simbody_lib_dir}")
+        list(APPEND run_path_list
+               "${rpath_macro}/${lib_dir_to_simbody_lib_dir}")
+    endif()
+
     set_property(TARGET osim${KIT} APPEND PROPERTY
-        INSTALL_RPATH "${install_rpath}"
+        INSTALL_RPATH "${run_path_list}"
         )
 endif()
 

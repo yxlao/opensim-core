@@ -166,6 +166,22 @@ macro(OpenSimAddPythonModule)
             "${py_dir_to_install_dir}${CMAKE_INSTALL_LIBDIR}")
         list(APPEND run_path_list "${rpath_macro}/${py_dir_to_lib_dir}")
 
+        # If Simbody libraries are installed in their own directories (not
+        # beside OpenSim libraries), we must add this RPATH:
+        if(NOT ${OPENSIM_INSTALL_UNIX_FHS})
+            # The location of Simbody's libraries within the Simbody root.
+            file(RELATIVE_PATH simbody_root_dir_to_simbody_lib_dir
+                 "${Simbody_ROOT_DIR}" "${Simbody_LIB_DIR}")
+            # The location of Simbody's libraries relative to OpenSim's
+            # installation root.
+            set(install_dir_to_simbody_lib_dir
+               "${OPENSIM_INSTALL_SIMBODYDIR}/${simbody_root_dir_to_simbody_lib_dir}")
+            set(py_dir_to_simbody_lib_dir
+                "${py_dir_to_install_dir}${install_dir_to_simbody_lib_dir}")
+            list(APPEND run_path_list
+                   "${rpath_macro}/${py_dir_to_simbody_lib_dir}")
+        endif()
+
         # Absolute RPATH.
         if(NOT OPENSIM_PYTHON_STANDALONE)
             list(APPEND run_path_list
