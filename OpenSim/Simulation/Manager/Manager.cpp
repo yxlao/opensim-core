@@ -21,8 +21,8 @@
  * limitations under the License.                                             *
  * -------------------------------------------------------------------------- */
 
-/* Note: This code was originally developed by Realistic Dynamics Inc. 
- * Author: Frank C. Anderson 
+/* Note: This code was originally developed by Realistic Dynamics Inc.
+ * Author: Frank C. Anderson
  */
 #include <cstdio>
 #include "Manager.h"
@@ -374,7 +374,7 @@ getTimeArray()
 }
 //_____________________________________________________________________________
 /**
- * Get the integration step (index) that occurred prior to or at 
+ * Get the integration step (index) that occurred prior to or at
  * a specified time.
  *
  * @param aTime Time of the integration step.
@@ -515,8 +515,8 @@ getIntegrator() const
  * Set the integrator.
  */
 void Manager::
-setIntegrator(SimTK::Integrator& integrator) 
-{   
+setIntegrator(SimTK::Integrator& integrator)
+{
     if (_integ.get() == &integrator) return;
     if (_timeStepper) {
         std::string msg = "Cannot set a new integrator on this Manager";
@@ -599,7 +599,7 @@ setStateStorage(Storage& aStorage)
  * Get the storage buffer for the integration states.
  */
 Storage& Manager::
-getStateStorage() const 
+getStateStorage() const
 {
     if(!_stateStore)
         throw Exception("Manager::getStateStorage(): Storage is not set");
@@ -759,31 +759,31 @@ integrate(SimTK::State& s)
 /**
  * return the step size when the integrator is taking fixed
  * step sizes
- * 
+ *
  * @param tArrayStep Step number
  */
 double Manager::getFixedStepSize(int tArrayStep) const {
-    if( _constantDT ) 
+    if( _constantDT )
         return( _dt );
-    else { 
-        if( tArrayStep >= _dtArray.getSize() ) 
+    else {
+        if( tArrayStep >= _dtArray.getSize() )
              return( _dtArray[ _dtArray.getSize()-1 ] );
-        else 
+        else
             return(_dtArray[tArrayStep]);
     }
 }
 //_____________________________________________________________________________
 /**
- * initialize storages and analyses 
- * 
+ * initialize storages and analyses
+ *
  * @param s system state before integration
  */
 void Manager::initializeStorageAndAnalyses(SimTK::State& s)
 {
-    if( _writeToStorage && _performAnalyses ) { 
+    if( _writeToStorage && _performAnalyses ) {
 
         double tReal = s.getTime();
-    
+
         // STORE STARTING CONTROLS
         if (_model->isControlled()){
             _controllerSet->setModel(*_model);
@@ -799,7 +799,7 @@ void Manager::initializeStorageAndAnalyses(SimTK::State& s)
             }
         }
 
-        // ANALYSES 
+        // ANALYSES
         AnalysisSet& analysisSet = _model->updAnalysisSet();
         analysisSet.begin(s);
     }
@@ -821,13 +821,13 @@ void Manager::initializeTimeStepper(const SimTK::State& s)
 //_____________________________________________________________________________
 /**
  * finalize storages and analyses
- * 
+ *
  * @param s system state before integration
  */
 void Manager::finalize(SimTK::State& s )
 {
-        // ANALYSES 
-    if(  _performAnalyses ) { 
+        // ANALYSES
+    if(  _performAnalyses ) {
         AnalysisSet& analysisSet = _model->updAnalysisSet();
         analysisSet.end(s);
     }
