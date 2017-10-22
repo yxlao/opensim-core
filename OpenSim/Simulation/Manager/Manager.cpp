@@ -50,12 +50,20 @@ std::string Manager::_displayName = "Simulator";
 //=============================================================================
 // CONSTRUCTOR(S)
 //=============================================================================
+// Manager::Manager(Model& model) : Manager(model, true)
+// {
+//     _defaultInteg.reset(
+//             new SimTK::RungeKuttaMersonIntegrator(_model->getMultibodySystem()));
+//     _integ = *_defaultInteg;
+// }
 Manager::Manager(Model& model) : Manager(model, true)
 {
-    _defaultInteg.reset(
-            new SimTK::RungeKuttaMersonIntegrator(_model->getMultibodySystem()));
+    auto *vi = new SimTK::RungeKuttaMersonIntegrator(_model->getMultibodySystem());
+    vi->setAccuracy(0.005);
+    _defaultInteg.reset(vi);
     _integ = *_defaultInteg;
 }
+
 
 Manager::Manager(Model& aModel, SimTK::Integrator& integ)
         : Manager(aModel, true) {

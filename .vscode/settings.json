@@ -1,0 +1,8 @@
+{
+    "editor.formatOnSave": false,
+    "files.associations": {
+        "*.bzl": "bazel",
+        "bitset": "cpp",
+        "future": "cpp"
+    },
+}
